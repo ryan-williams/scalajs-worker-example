@@ -4,7 +4,7 @@ import org.scalajs.dom.Worker
 import scala.scalajs.js
 
 object MainApp {
-  val worker = new Worker("worker.js")
+  val worker = new Worker("run-worker.js")
   def main(args: Array[String]): Unit = {
     println("main()")
     worker.onmessage = (e: dom.MessageEvent) ⇒ {
