@@ -6,24 +6,7 @@ lazy val app =
     .enablePlugins(ScalaJSBundlerPlugin)
     .settings(
       libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.6",
-      scalaJSUseMainModuleInitializer := true,
-      resourceGenerators in Compile += Def.task {
-        val resources =
-          Seq(
-            "index.html" → "index-dev.html",
-            "worker.js" → "run-worker.js"
-          )
-
-        import IO._
-        for {
-          (source, target) ← resources
-          src = (resourceDirectory in Compile).value / source
-          dest = baseDirectory.value / target
-          _ = writeLines(dest, readLines(src))
-        } yield
-          dest
-      }
-      .taskValue
+      scalaJSUseMainModuleInitializer := true
     )
 
 lazy val worker =

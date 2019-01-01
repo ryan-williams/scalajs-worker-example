@@ -3,8 +3,10 @@ import org.scalajs.dom.Worker
 
 import scala.scalajs.js
 
+case class Foo(n: Int, s: String)
+
 object MainApp {
-  val worker = new Worker("run-worker.js")
+  val worker = new Worker("worker.js")
   def main(args: Array[String]): Unit = {
     println("main()")
     worker.onmessage = (e: dom.MessageEvent) ⇒ {
