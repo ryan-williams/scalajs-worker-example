@@ -1,3 +1,4 @@
+import boopickle.Default._
 import org.scalajs.dom
 
 import scala.scalajs.js
@@ -16,9 +17,8 @@ object Worker {
   }
 
   def onMessage(msg: dom.MessageEvent) = {
-    println(s"got msg data: ${msg.data}")
-    val foo = msg.data.asInstanceOf[Foo]
+    val foo = Serde[Foo](msg)
     val doubled = foo.copy(n = 2*foo.n)
-    WorkerGlobal.postMessage(doubled.asInstanceOf[js.Any])
+    WorkerGlobal.postMessage(Serde(doubled))
   }
 }

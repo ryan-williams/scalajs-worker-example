@@ -5,7 +5,10 @@ lazy val app =
   project
     .enablePlugins(ScalaJSBundlerPlugin)
     .settings(
-      libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.6",
+      libraryDependencies ++= Seq(
+        "org.scala-js" %%% "scalajs-dom" % "0.9.6",
+        "io.suzaku" %%% "boopickle" % "1.3.0"
+      ),
       scalaJSUseMainModuleInitializer := true
     )
 

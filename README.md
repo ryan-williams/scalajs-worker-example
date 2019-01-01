@@ -18,31 +18,31 @@ python -m http.server
 
 The app is then running at http://localhost:8000/
 
-## How to serialize Scala objects over Worker API?
-The app currently fails to pass a Scala case class over the API because I don't know the preferred way to serialize it for that journey.
+## Serializing Scala objects over the Worker API
 
-At http://localhost:8000/ you should see something in the dev console like:
+[The `Serde` object](app/src/main/scala/App.scala#L26-38) shows a way of sending Scala objects over the Worker API by serializing to bytes using [boopickle](https://github.com/suzaku-io/boopickle), and dealing with JS byte-arrays using [the example of suzaku](https://github.com/suzaku-io/suzaku/blob/c1de595f5dba3277e3847837b719cfda5c1d6e0e/platform/web/core-shared/src/main/scala/suzaku/platform/web/WebWorkerTransport.scala#L27-L34).
 
-[![](https://cl.ly/9b83c8a8bae2/Screen%20Shot%202019-01-01%20at%204.17.37%20PM.png)](https://cl.ly/9b83c8a8bae2/Screen%20Shot%202019-01-01%20at%204.17.37%20PM.png)
-
-Naively passing a [`Foo`](app/src/main/scala/MainApp.scala#L6) over the web-worker API:
+[The main `App`'s send and receive code](app/src/main/scala/App.scala#L16-22) is then straightforward:
 
 ```scala
-worker.postMessage(Foo(123, "abc").asInstanceOf[js.Any])
-```
-
-throws that cast exception on the receiving end:
-
-```scala
-object Worker {
-  def onMessage(msg: dom.MessageEvent) = {
-    val foo = msg.data.asInstanceOf[Foo]  // 💥
-    …
-  }
+worker.onmessage = (msg: dom.MessageEvent) ⇒ {
+  val foo = Serde[Foo](msg)
+  println(s"received foo: $foo")
 }
+
+val foo = Foo(123, "abc")
+worker.postMessage(Serde(foo))
 ```
 
-What is the best way to send regular Scala ADTs over the Worker API (or other similar `js.Any`-based APIs)? 
+and [the `Worker`'s](app/worker/src/main/scala/Worker.scala#L19-23) is similar:
+
+```scala
+def onMessage(msg: dom.MessageEvent) = {
+  val foo = Serde[Foo](msg)
+  val doubled = foo.copy(n = 2*foo.n)
+  WorkerGlobal.postMessage(Serde(doubled))
+}
+``` 
 
 ## Separate SBT module for worker app
 
