@@ -5,7 +5,7 @@ import scala.scalajs.js
 
 case class Foo(n: Int, s: String)
 
-object MainApp {
+object App {
   val worker = new Worker("worker.js")
   def main(args: Array[String]): Unit = {
     println("main()")
